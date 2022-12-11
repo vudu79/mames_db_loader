@@ -57,20 +57,38 @@ def make_list() -> list:
     bugaga_list = list()
     total_list = list()
 
+    pint_dict = {
+        "name": "",
+        "img": ""
+    }
+
+    pinterest_list = list()
+    with open("result.txt", "r", encoding="utf-8") as file:
+        pinterest = file.readlines()
+    for x in pinterest:
+        pint_dict["img"] = x.strip()
+        pint_dict["name"] = ""
+        pinterest_list.append(pint_dict.copy())
+        pint_dict.clear()
+
     with open("memesmix_memes.json", "r", encoding="utf-8") as file:
         memesmix_list = json.load(file)
 
     with open("bugaga_memes.json", "r", encoding="utf-8") as file:
         bugaga_list = json.load(file)
 
-    total_list = [*memesmix_list, *bugaga_list]
+    total_list = [*memesmix_list, *bugaga_list, *pinterest_list]
     # total_list = [*bugaga_list]
     shuffle(total_list)
+    print(len(pinterest_list))
     print(len(memesmix_list))
     print(len(bugaga_list))
     print(len(total_list))
-    return total_list
 
+    with open("result_memes.json", "w", encoding="utf-8") as file:
+        json.dump(total_list, file, ensure_ascii=False, indent=4)
+
+    return total_list
 
 
 def db_connect(memes_list: list):
@@ -94,8 +112,8 @@ def db_connect(memes_list: list):
             # Execute a command: this creates a new table
             cursor.execute(create_table_query)
 
-            for x in range(0, len(memes_list)):
-                domen_name = urlparse(memes_list[x]["img"]).netloc
+            for x in range(0, 100):
+                domen_name = urlparse(memes_list[x]["img"]).scheme + urlparse(memes_list[x]["img"]).netloc
                 values_tuple = (memes_list[x]["img"],
                                 memes_list[x]["name"],
                                 0, 0, domen_name, datetime.datetime.utcnow())
@@ -104,14 +122,12 @@ def db_connect(memes_list: list):
                                 VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (url) DO NOTHING"""
                 cursor.execute(insert_query, values_tuple)
 
-
-
             #
 
-            query = """select url, titl-e from memes LIMIT 20"""
-            cursor.execute(query)
-            record = cursor.fetchall()
-            print(record[0][0])
+            # query = """select url, title from memes LIMIT 20"""
+            # cursor.execute(query)
+            # record = cursor.fetchall()
+            # print(record[0][0])
             # Itemprice = int(record)
             #
             # # find customer's ewallet balance
@@ -144,4 +160,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, filename="memes_log.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s")
 
-    db_connect(make_list())
+    make_list()
+    # db_connect(make_list())
