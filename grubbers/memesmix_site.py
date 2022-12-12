@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
+
 def main():
     mem_info_dict = dict()
     memes_list = list()
