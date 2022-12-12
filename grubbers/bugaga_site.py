@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 
 # сайт https://bugaga.ru
-def main():
+def bugag_pars(uri: str):
     mem_info_dict = dict()
     memes_list = list()
     ua = UserAgent()
@@ -15,13 +15,14 @@ def main():
     headers = {
         "user-agent": ua.chrome
     }
+
     domen = "https://bugaga.ru"
     # print(headers["user-agent"])
     for x in range(1, 29):
-        uri = f"/tags/%D0%BC%D0%B5%D0%BC%D1%8B/page/{x}"
+        uri_string = f"/{uri}/page/{x}"
         # print(uri + " " + str(datetime.datetime.now()))
         try:
-            res = requests.get(domen + uri, headers=headers)
+            res = requests.get(domen + uri_string, headers=headers)
             if res.status_code == 200:
                 logging.info(f'Рабатаю со страницей - {x}')
                 soup = BeautifulSoup(res.text, "lxml")
@@ -85,6 +86,9 @@ def main():
 
 
 if __name__ == "__main__":
+    # logging.basicConfig(level=logging.INFO, filename="../logs/memes_buguga_log.log", filemode="w",
+    #                     format="%(asctime)s %(levelname)s %(message)s")
     logging.basicConfig(level=logging.INFO, filename="../logs/memes_buguga_log.log", filemode="w",
-                        format="%(asctime)s %(levelname)s %(message)s")
-    main()
+                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+    # bugag_pars("/tags/%D0%BC%D0%B5%D0%BC%D1%8B")
+    bugag_pars("jokes")

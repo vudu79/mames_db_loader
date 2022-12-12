@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.devtools.v85.indexed_db import Key
 
 
-def main():
+def pinterest_pars(question: str):
     ua = UserAgent(verify_ssl=False,
                    fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36')
     options = webdriver.ChromeOptions()
@@ -20,7 +20,8 @@ def main():
     options.add_argument('--disable-gpu')
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
-    driver = webdriver.Chrome(executable_path="/home/andrey/python/selenium_grabber_memes/chromedriver", options=options)
+    # driver = webdriver.Chrome(executable_path="/home/andrey/python/selenium_grabber_memes/chromedriver", options=options)
+    driver = webdriver.Chrome(executable_path="chromedriver", options=options)
     url = 'https://ru.pinterest.com/'
     try:
         driver.get(url)
@@ -44,7 +45,7 @@ def main():
         time.sleep(5)
         search_input = driver.find_element(By.TAG_NAME, 'input')
         search_input.clear()
-        search_input.send_keys('смешные мемы на все случаи жизни')
+        search_input.send_keys(question)
         search_input.send_keys(Keys.ENTER)
         time.sleep(5)
 
@@ -55,7 +56,7 @@ def main():
         file_size = 0.0
         page = 0
         while file_size < 200:
-            page +=1
+            page += 1
             img_divs = driver.find_elements(By.XPATH, "//*[@class='hCL kVc L4E MIw']")
             count = 0
 
@@ -69,8 +70,8 @@ def main():
                         with open("result1.txt", "a", encoding="utf-8") as file:
                             file.write(f'{img_url}\n')
                         file_stats = os.stat("result1.txt")
-                        #file_size = file_stats.st_size / 1024:.2f
-                        file_size = file_stats.st_size / (1024*1024)
+                        # file_size = file_stats.st_size / 1024:.2f
+                        file_size = file_stats.st_size / (1024 * 1024)
                         print(f"размер файла {file_size}")
 
                     except Exception as exep:
@@ -82,9 +83,10 @@ def main():
                     print(ex)
                 finally:
                     continue
-            total_time =datetime.now() - start
+            total_time = datetime.now() - start
             print(f'Страница {page}. Загрузилось {count}, общее количество ссылок {len(url_list)}. Время {total_time}')
-            logging.info(f'Страница {page}. Загрузилось {count}, общее количество {len(url_list)} ссылок. Время {total_time}')
+            logging.info(
+                f'Страница {page}. Загрузилось {count}, общее количество {len(url_list)} ссылок. Время {total_time}')
             # print(url_list)
 
             html.send_keys(Keys.PAGE_DOWN)
@@ -99,6 +101,6 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, filename="memes_log.log", filemode="w",
-                        format="%(asctime)s %(levelname)s %(message)s")
-    main()
+    logging.basicConfig(level=logging.INFO, filename="../logs/memes_log.log", filemode="w",
+                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+    pinterest_pars("смешные мемы на все случаи жизни")

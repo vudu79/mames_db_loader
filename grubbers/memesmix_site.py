@@ -6,8 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-
-def main():
+def memesmix_pars(uri_part: str):
     mem_info_dict = dict()
     memes_list = list()
     ua = UserAgent()
@@ -19,12 +18,11 @@ def main():
     domen = "http://memesmix.net"
     print(headers["user-agent"])
     for x in range(1, 34295):
-        uri = f"/images/popular/alltime/{x}"
-        url = domen + uri
-        print(url)
+        uri_string = f"/{uri_part}/{x}"
+        url_string = domen + uri_string
         # print(uri + " " + str(datetime.datetime.now()))
         try:
-            res = requests.get(url, headers=headers)
+            res = requests.get(url_string, headers=headers)
             # print(res.text)
             if res.status_code == 200:
                 print(res.status_code)
@@ -52,6 +50,10 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, filename="logs/memesmix_log.log", filemode="w",
-                        format="%(asctime)s %(levelname)s %(message)s")
-    main()
+    # logging.basicConfig(level=logging.INFO, filename="../logs/memesmix_log.log", filemode="w",
+    # format="%(asctime)s %(levelname)s %(message)s")
+
+    logging.basicConfig(level=logging.INFO, filename="../logs/memesmix_log.log", filemode="w",
+                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+
+    memesmix_pars("images/popular/alltime")
