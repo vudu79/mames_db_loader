@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 
 from fake_useragent import UserAgent
 import requests
@@ -17,8 +18,8 @@ def demotos_pars(uri_part: str):
 
     domen = "https://demotos.ru"
     print(headers["user-agent"])
-    # for x in range(1, 484):
-    for x in range(1, 2):
+    for x in range(1, 484):
+    # for x in range(1, 2):
         uri_string = f"/{uri_part}/page/{x}" if x > 1 else f"/{uri_part}"
         url_string = domen + uri_string
         try:
@@ -28,13 +29,17 @@ def demotos_pars(uri_part: str):
                 logging.info(f'Рабатаю со страницей - {x}')
                 print(f'Рабатаю со страницей - {x}')
                 soup = BeautifulSoup(res.text, "lxml")
-                divs = soup.find_all("div", class_="field-items")
+                main_divs = soup.find_all("div", class_=re.compile("views-row views-row-\d\d?.*"))
 
-                for div in divs:
+                for div in main_divs:
+                    # print(div)
                     try:
-                        img_url = div.find("img").get("src")
+                        img_url0 = div.find("div", class_="field-items")
+                        img_url = img_url0.find("img").get("src") if img_url0 else None
+                        name0 = div.find("span", class_="views-field views-field-title")
+                        name = name0.find("span", class_="field-content").text if name0 else None
                         if img_url:
-                            mem_info_dict["name"] = None
+                            mem_info_dict["name"] = name
                             mem_info_dict["img"] = img_url
                             buffer = mem_info_dict.copy()
                             memes_list.append(buffer)
