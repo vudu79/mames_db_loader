@@ -5,11 +5,12 @@ from database.db import db_connect
 
 
 def make_list() -> list:
-    memesmix_list = list()
+    # memesmix_list = list()
     bugaga_list = list()
     pinterest_list = list()
     fishki_list = list()
     demotos_list = list()
+    zaebovnet_list = list()
 
     total_list = list()
     pint_dict = {
@@ -25,31 +26,33 @@ def make_list() -> list:
         pinterest_list.append(pint_dict.copy())
         pint_dict.clear()
 
-    with open("json_files/memesmix_memes.json", "r", encoding="utf-8") as file:
-        memesmix_list = json.load(file)
+    # with open("json_files/memesmix_memes.json", "r", encoding="utf-8") as file:
+    #     memesmix_list = json.load(file)
 
     with open("json_files/bugaga_memes.json", "r", encoding="utf-8") as file:
         bugaga_list = json.load(file)
 
     with open("json_files/demotos_memes.json", "r", encoding="utf-8") as file:
-            demotos_list = json.load(file)
+        demotos_list = json.load(file)
 
     with open("json_files/fishkinet_memes.json", "r", encoding="utf-8") as file:
-            fishki_list = json.load(file)
+        fishki_list = json.load(file)
+    with open("json_files/zaebovnet_memes.json", "r", encoding="utf-8") as file:
+        zaebovnet_list = json.load(file)
 
-    total_list = [*memesmix_list, *bugaga_list, *pinterest_list, *demotos_list, *fishki_list]
-    # total_list = [*bugaga_list]
+    total_list = [*bugaga_list, *pinterest_list, *demotos_list, *fishki_list, *zaebovnet_list]
     shuffle(total_list)
     print(len(pinterest_list))
-    print(len(memesmix_list))
+    # print(len(memesmix_list))
     print(len(bugaga_list))
     print(len(fishki_list))
     print(len(demotos_list))
+    print(len(zaebovnet_list))
 
     print(len(total_list))
     #
-    with open("json_files/result_memes.json", "w", encoding="utf-8") as file:
-        json.dump(total_list, file, ensure_ascii=False, indent=4)
+    # with open("json_files/result_memes.json", "w", encoding="utf-8") as file:
+    #     json.dump(total_list, file, ensure_ascii=False, indent=4)
 
     return total_list
 

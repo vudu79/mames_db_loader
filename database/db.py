@@ -25,7 +25,8 @@ def db_connect(memes_list: list):
             cursor.execute(create_table_query)
 
             for x in range(0, len(memes_list)):
-                domen_name = urlparse(memes_list[x]["img"]).scheme + urlparse(memes_list[x]["img"]).netloc
+            # for x in range(0, 300):
+                domen_name = urlparse(memes_list[x]["img"]).scheme + "://" + urlparse(memes_list[x]["img"]).netloc
                 values_tuple = (memes_list[x]["img"],
                                 memes_list[x]["name"],
                                 0, 0, domen_name, datetime.datetime.utcnow())
