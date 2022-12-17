@@ -10,6 +10,20 @@ from database.db import db_insert
 
 
 def pinterest_pars(question: str):
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    # настройка обработчика и форматировщика для logger2
+    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.curdir), "logs", 'pinterest.log'), mode='w')
+    formatter = logging.Formatter(
+        "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+
+    # добавление форматировщика к обработчику
+    handler.setFormatter(formatter)
+    # добавление обработчика к логгеру
+    logger.addHandler(handler)
+
     ua = UserAgent(verify_ssl=False,
                    fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36')
     options = webdriver.ChromeOptions()
@@ -21,7 +35,7 @@ def pinterest_pars(question: str):
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
 
-    # driver = webdriver.Chrome(executable_path="/home/andrey/python/selenium_grabber_memes/chromedriver", options=options)
+    # driver = webdriver.Chrome(executable_path="/home/andrey/python/gif_bot/cron_tasks/chromedriver", options=options)
     driver = webdriver.Chrome(executable_path="chromedriver", options=options)
     url = 'https://ru.pinterest.com/'
 
@@ -78,23 +92,23 @@ def pinterest_pars(question: str):
 
                         with open("pinterest.txt", "a", encoding="utf-8") as file:
                             file.write(f'{img_url}\n')
-                        file_stats = os.stat("pinterest.txt")
+                        file_stats = os.stat("../json_files/pinterest.txt")
                         # file_size = file_stats.st_size / 1024:.2f
                         file_size = file_stats.st_size / (1024 * 1024)
                         print(f"размер файла {file_size}")
 
                     except Exception as exep:
-                        logging.error(f'Ошибка при записи в файл - {exep}')
+                        logger.error(f'Ошибка при записи в файл - {exep}')
                         print(exep)
 
                 except Exception as ex:
-                    logging.error(f'Ошибка в цикле по сбору ссылок - {ex}')
+                    logger.error(f'Ошибка в цикле по сбору ссылок - {ex}')
                     print(ex)
                 finally:
                     continue
             total_time = datetime.now() - start
             print(f'Итерация {page}. Загрузилось {count}, общее количество ссылок {len(url_list)}. Время {total_time}')
-            logging.info(
+            logger.info(
                 f'Итерация {page}. Загрузилось {count}, общее количество {len(url_list)} ссылок. Время {total_time}')
             # print(url_list)
             html.send_keys(Keys.F5)
@@ -104,13 +118,13 @@ def pinterest_pars(question: str):
 
     except Exception as eee:
         print(eee)
-        logging.error(f'Ошибка в работе селениум - {eee}')
+        logger.error(f'Ошибка в работе селениум - {eee}')
     finally:
         driver.close()
         driver.quit()
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, filename="../logs/memes_log.log", filemode="w",
+    logger.basicConfig(level=logger.INFO, filename="../logs/memes_log.log", filemode="w",
                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
     pinterest_pars("смешные мемы на все случаи жизни")
