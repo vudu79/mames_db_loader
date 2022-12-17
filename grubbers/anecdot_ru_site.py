@@ -5,6 +5,8 @@ from fake_useragent import UserAgent
 import requests
 from bs4 import BeautifulSoup
 
+from database import db_connect
+
 
 def anecdot_pars(uri_part: str):
     mem_info_dict = dict()
@@ -37,12 +39,14 @@ def anecdot_pars(uri_part: str):
                         img_url = img_div.find("div", class_="text").find("img").get("src")
                         print(img_url)
                         if img_url not in memes_list:
-                            memes_list.append(img_url)
                             try:
+                                db_connect(img_url, "https://www.anekdot.ru")
+
                                 with open("../json_files/anekdot_memes.txt", "a", encoding="utf-8") as f:
                                     f.write(f"{img_url}\n")
                                 logging.info(f"В итоговом файле {len(memes_list)} записей")
                                 print(f"В итоговом файле {len(memes_list)} записей")
+
                             except Exception as ee:
                                 logging.error(f"Проблеммы с записью в файл - {ee}")
 
@@ -56,7 +60,6 @@ def anecdot_pars(uri_part: str):
         except Exception as e:
             print(e)
             logging.error(f"Проблеммы с requests на странице с мемами - {e}")
-
 
 
 if __name__ == "__main__":

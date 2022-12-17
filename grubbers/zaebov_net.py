@@ -4,6 +4,7 @@ import logging
 from fake_useragent import UserAgent
 import requests
 from bs4 import BeautifulSoup
+from database import db_connect
 
 
 def zaebovnet_pars(uri_part: str):
@@ -51,11 +52,8 @@ def zaebovnet_pars(uri_part: str):
                                     img_url = page.find("img").get("src")
                                     print(img_url)
                                     if img_url:
-                                        mem_info_dict["name"] = None
-                                        mem_info_dict["img"] = img_url
-                                        buffer = mem_info_dict.copy()
-                                        memes_list.append(buffer)
-                                        mem_info_dict.clear()
+                                        db_connect(img_url, "https://zaebov.net")
+
                                 except Exception as eeee:
                                     print(f"Проблеммы с отдельным изображением - {eeee}")
                                     logging.error(f"Проблеммы с отдельным изображением - {eeee}")

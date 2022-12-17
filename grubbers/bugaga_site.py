@@ -5,6 +5,8 @@ from fake_useragent import UserAgent
 import requests
 from bs4 import BeautifulSoup
 
+from database import db_connect
+
 
 # сайт https://bugaga.ru
 def bugag_pars(uri: str):
@@ -69,6 +71,7 @@ def bugag_pars(uri: str):
                                                     buffer = mem_info_dict.copy()
                                                     memes_list.append(buffer)
                                                     mem_info_dict.clear()
+                                                    db_connect(img_url, "https://bugaga.ru")
 
                     except Exception as e:
                         logging.error("проблемма с запросом на страницу мемов")

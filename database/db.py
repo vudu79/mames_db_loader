@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 import datetime
 
 
-def db_connect(memes_list: list):
+def db_connect(img_url: str, source: str):
     # f'host=127.0.0.1 port=5432 dbname=bot_db user=andrey password=SpkSpkSpk1979 connect_timeout=60'
 
     connection = psycopg2.connect(user="andrey",
@@ -15,22 +15,18 @@ def db_connect(memes_list: list):
     with connection:
         with connection.cursor() as cursor:
             create_table_query = '''CREATE TABLE IF NOT EXISTS memes
-                                    (url TEXT PRIMARY KEY NOT NULL,
+                                    (img_url TEXT PRIMARY KEY NOT NULL,
+                                    source VARCHAR,
                                     like_count BIGINT,
                                     dislike_count BIGINT,
-                                    source_site TEXT,
                                     add_time timestamp); '''
             # Execute a command: this creates a new table
             cursor.execute(create_table_query)
 
-            for x in memes_list:
-
-                domen_name = urlparse(x).scheme + "://" + urlparse(x).netloc
-                values_tuple = (x, 0, 0, domen_name, datetime.datetime.utcnow())
-
-                insert_query = """ INSERT INTO memes (url,  like_count, dislike_count, source_site, add_time)
-                                VALUES (%s, %s, %s, %s, %s) ON CONFLICT (url) DO NOTHING"""
-                cursor.execute(insert_query, values_tuple)
+            values_tuple = (img_url, source, 0, 0, datetime.datetime.utcnow())
+            insert_query = """ INSERT INTO memes (img_url,  source, like_count,dislike_count, add_time)
+                            VALUES (%s, %s, %s, %s, %s) ON CONFLICT (img_url) DO NOTHING"""
+            cursor.execute(insert_query, values_tuple)
 
             #
 

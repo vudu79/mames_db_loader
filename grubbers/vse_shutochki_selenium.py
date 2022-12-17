@@ -8,8 +8,10 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.devtools.v85.indexed_db import Key
 
+from database import db_connect
 
-def pinterest_pars(question: str):
+
+def vse_shutochki_pars():
     for page in range(1, 2822):
         ua = UserAgent(verify_ssl=False,
                        fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36')
@@ -43,8 +45,7 @@ def pinterest_pars(question: str):
                         url_list.append(img_url)
                         count += 1
                         try:
-                            with open("../json_files/vse_shutochki.txt", "a", encoding="utf-8") as file:
-                                file.write(f'{img_url}\n')
+                            db_connect(img_url, "https://vse-shutochki.ru")
                         except Exception as exep:
                             logging.error(f'Ошибка при записи в файл - {exep}')
                             print(exep)
@@ -76,4 +77,4 @@ def pinterest_pars(question: str):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, filename="../logs/vse_shutochki_log.log", filemode="w",
                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
-    pinterest_pars("смешные мемы на все случаи жизни")
+    vse_shutochki_pars()

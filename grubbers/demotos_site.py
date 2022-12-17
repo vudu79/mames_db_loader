@@ -6,6 +6,8 @@ from fake_useragent import UserAgent
 import requests
 from bs4 import BeautifulSoup
 
+from database import db_connect
+
 
 def demotos_pars(uri_part: str):
     mem_info_dict = dict()
@@ -44,6 +46,7 @@ def demotos_pars(uri_part: str):
                             buffer = mem_info_dict.copy()
                             memes_list.append(buffer)
                             mem_info_dict.clear()
+                            db_connect(img_url, "https://demotos.ru")
                     except Exception as eeee:
                         print(f"Проблеммы с отдельным изображением - {eeee}")
                         logging.error(f"Проблеммы с отдельным изображением - {eeee}")
