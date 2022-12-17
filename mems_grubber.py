@@ -2,7 +2,6 @@ import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from random import shuffle
-from database.db import db_connect
 from grubbers.anecdot_ru_site import anecdot_pars
 from grubbers.bugaga_site import bugag_pars
 from grubbers.demotos_site import demotos_pars
@@ -89,7 +88,7 @@ def cron_meme_parse():
         (anecdot_pars, "random/mem"),
     ]
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=6) as executor:
         future_list = []
         for parser in parser_dict:
             future = executor.submit(parser[0], parser[1])
@@ -99,8 +98,8 @@ def cron_meme_parse():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, filename="logs/memes_log.log", filemode="w",
-                        format="%(asctime)s %(levelname)s %(message)s")
+    # logging.basicConfig(level=logging.INFO, filename="logs/memes_log.log", filemode="w",
+    #                     format="%(asctime)s %(levelname)s %(message)s")
 
     # make_list()
     # db_connect(make_list())

@@ -1,12 +1,13 @@
 import json
 import logging
-
-from logs import get_logger
+import os
 import re
-from fake_useragent import UserAgent
+
 import requests
 from bs4 import BeautifulSoup
-from database.db import db_connect
+from fake_useragent import UserAgent
+
+from database.db import db_connect, db_insert
 
 
 def demotos_pars(uri_part: str):
@@ -14,7 +15,7 @@ def demotos_pars(uri_part: str):
     logger.setLevel(logging.INFO)
 
     # настройка обработчика и форматировщика для logger2
-    handler = logging.FileHandler(f"../logs/{__name__}.log", mode='w')
+    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.curdir), "logs", 'demotos.log'), mode='w')
     formatter = logging.Formatter(
         "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 
@@ -59,7 +60,7 @@ def demotos_pars(uri_part: str):
                             buffer = mem_info_dict.copy()
                             memes_list.append(buffer)
                             mem_info_dict.clear()
-                            db_connect(img_url, "https://demotos.ru")
+                            db_insert(img_url, "https://demotos.ru")
                     except Exception as eeee:
                         print(f"Проблеммы с отдельным изображением - {eeee}")
                         logger.error(f"Проблеммы с отдельным изображением - {eeee}")

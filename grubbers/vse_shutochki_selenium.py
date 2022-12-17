@@ -1,14 +1,14 @@
 import logging
+import os
 import time
 from datetime import datetime
-from os import name
 
 from fake_useragent import UserAgent
 from selenium import webdriver
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from database.db import db_connect
-from logs import get_logger
+
+from database.db import db_connect, db_insert
 
 
 def vse_shutochki_pars(uti: str):
@@ -16,7 +16,7 @@ def vse_shutochki_pars(uti: str):
     logger.setLevel(logging.INFO)
 
     # настройка обработчика и форматировщика для logger2
-    handler = logging.FileHandler(f"../logs/{__name__}.log", mode='w')
+    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.curdir), "logs", 'vse_shutochki.log'), mode='w')
     formatter = logging.Formatter(
         "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 
@@ -58,7 +58,7 @@ def vse_shutochki_pars(uti: str):
                         url_list.append(img_url)
                         count += 1
                         try:
-                            db_connect(img_url, "https://vse-shutochki.ru")
+                            db_insert(img_url, "https://vse-shutochki.ru")
                         except Exception as exep:
                             logger.error(f'Ошибка при записи в файл - {exep}')
                             print(exep)
