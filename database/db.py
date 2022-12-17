@@ -16,7 +16,6 @@ def db_connect(memes_list: list):
         with connection.cursor() as cursor:
             create_table_query = '''CREATE TABLE IF NOT EXISTS memes
                                     (url TEXT PRIMARY KEY NOT NULL,
-                                    title TEXT,
                                     like_count BIGINT,
                                     dislike_count BIGINT,
                                     source_site TEXT,
@@ -24,15 +23,13 @@ def db_connect(memes_list: list):
             # Execute a command: this creates a new table
             cursor.execute(create_table_query)
 
-            for x in range(0, len(memes_list)):
-            # for x in range(0, 300):
-                domen_name = urlparse(memes_list[x]["img"]).scheme + "://" + urlparse(memes_list[x]["img"]).netloc
-                values_tuple = (memes_list[x]["img"],
-                                memes_list[x]["name"],
-                                0, 0, domen_name, datetime.datetime.utcnow())
+            for x in memes_list:
 
-                insert_query = """ INSERT INTO memes (url, title, like_count, dislike_count, source_site, add_time)
-                                VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (url) DO NOTHING"""
+                domen_name = urlparse(x).scheme + "://" + urlparse(x).netloc
+                values_tuple = (x, 0, 0, domen_name, datetime.datetime.utcnow())
+
+                insert_query = """ INSERT INTO memes (url,  like_count, dislike_count, source_site, add_time)
+                                VALUES (%s, %s, %s, %s, %s) ON CONFLICT (url) DO NOTHING"""
                 cursor.execute(insert_query, values_tuple)
 
             #
