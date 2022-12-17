@@ -1,12 +1,12 @@
 import logging
 import os
-from selenium import webdriver
-from fake_useragent import UserAgent
 import time
 from datetime import datetime
+from fake_useragent import UserAgent
+from selenium import webdriver
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.devtools.v85.indexed_db import Key
+from database.db import db_insert
 
 
 def pinterest_pars(question: str):
@@ -20,9 +20,11 @@ def pinterest_pars(question: str):
     options.add_argument('--disable-gpu')
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
+
     # driver = webdriver.Chrome(executable_path="/home/andrey/python/selenium_grabber_memes/chromedriver", options=options)
     driver = webdriver.Chrome(executable_path="chromedriver", options=options)
     url = 'https://ru.pinterest.com/'
+
     try:
         driver.get(url)
         time.sleep(10)
@@ -49,13 +51,18 @@ def pinterest_pars(question: str):
         search_input.send_keys(Keys.ENTER)
         time.sleep(5)
 
-        driver.get(url=url)
-        html = driver.find_element(By.TAG_NAME, "html")
         url_list = list()
         start = datetime.now()
         file_size = 0.0
         page = 0
         while file_size < 200:
+            driver.get(url=url)
+            html = driver.find_element(By.TAG_NAME, "html")
+            html.send_keys(Keys.PAGE_DOWN)
+            time.sleep(5)
+            html.send_keys(Keys.PAGE_DOWN)
+            time.sleep(5)
+
             page += 1
             img_divs = driver.find_elements(By.XPATH, "//*[@class='hCL kVc L4E MIw']")
             count = 0
@@ -67,9 +74,11 @@ def pinterest_pars(question: str):
                     count += 1
 
                     try:
-                        with open("result1.txt", "a", encoding="utf-8") as file:
+                        db_insert(img_url, "https://ru.pinterest.com")
+
+                        with open("pinterest.txt", "a", encoding="utf-8") as file:
                             file.write(f'{img_url}\n')
-                        file_stats = os.stat("result1.txt")
+                        file_stats = os.stat("pinterest.txt")
                         # file_size = file_stats.st_size / 1024:.2f
                         file_size = file_stats.st_size / (1024 * 1024)
                         print(f"размер файла {file_size}")
@@ -84,13 +93,14 @@ def pinterest_pars(question: str):
                 finally:
                     continue
             total_time = datetime.now() - start
-            print(f'Страница {page}. Загрузилось {count}, общее количество ссылок {len(url_list)}. Время {total_time}')
+            print(f'Итерация {page}. Загрузилось {count}, общее количество ссылок {len(url_list)}. Время {total_time}')
             logging.info(
-                f'Страница {page}. Загрузилось {count}, общее количество {len(url_list)} ссылок. Время {total_time}')
+                f'Итерация {page}. Загрузилось {count}, общее количество {len(url_list)} ссылок. Время {total_time}')
             # print(url_list)
+            html.send_keys(Keys.F5)
+            time.sleep(10)
 
-            html.send_keys(Keys.PAGE_DOWN)
-            time.sleep(3)
+
 
     except Exception as eee:
         print(eee)

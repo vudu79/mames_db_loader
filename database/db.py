@@ -1,6 +1,5 @@
-import psycopg2
-from urllib.parse import urlparse
 import datetime
+import psycopg2
 
 
 def db_connect():
@@ -13,7 +12,8 @@ def db_connect():
     return connection
 
 
-def db_insert(connection: any, img_url: str, source: str):
+def db_insert(img_url: str, source: str):
+    connection = db_connect()
     with connection:
         with connection.cursor() as cursor:
             create_table_query = '''CREATE TABLE IF NOT EXISTS memes
@@ -61,7 +61,8 @@ def db_insert(connection: any, img_url: str, source: str):
             # print("Transaction completed successfully ")
 
 
-def db_select_count(connection: any):
+def db_select_count():
+    connection = db_connect()
     with connection:
         with connection.cursor() as cursor:
             query = """select count(*) from mames"""
