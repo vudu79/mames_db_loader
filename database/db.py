@@ -3,15 +3,17 @@ from urllib.parse import urlparse
 import datetime
 
 
-def db_connect(img_url: str, source: str):
-    # f'host=127.0.0.1 port=5432 dbname=bot_db user=andrey password=SpkSpkSpk1979 connect_timeout=60'
-
+def db_connect():
     connection = psycopg2.connect(user="andrey",
                                   password="SpkSpkSpk1979",
                                   host="127.0.0.1",
                                   port="5432",
                                   database="bot_db",
                                   connect_timeout=60)
+    return connection
+
+
+def db_insert(connection: any, img_url: str, source: str):
     with connection:
         with connection.cursor() as cursor:
             create_table_query = '''CREATE TABLE IF NOT EXISTS memes
@@ -22,13 +24,10 @@ def db_connect(img_url: str, source: str):
                                     add_time timestamp); '''
             # Execute a command: this creates a new table
             cursor.execute(create_table_query)
-
             values_tuple = (img_url, source, 0, 0, datetime.datetime.utcnow())
             insert_query = """ INSERT INTO memes (img_url,  source, like_count,dislike_count, add_time)
                             VALUES (%s, %s, %s, %s, %s) ON CONFLICT (img_url) DO NOTHING"""
             cursor.execute(insert_query, values_tuple)
-
-            #
 
             # query = """select url, title from memes LIMIT 20"""
             # cursor.execute(query)
@@ -60,3 +59,12 @@ def db_connect(img_url: str, source: str):
             # sql_update_query = """Update account set balance = %s where id = 2236781258763"""
             # cursor.execute(sql_update_query, (new_AccountBalance,))
             # print("Transaction completed successfully ")
+
+
+def db_select_count(connection: any):
+    with connection:
+        with connection.cursor() as cursor:
+            query = """select count(*) from mames"""
+            cursor.execute(query)
+            count = cursor.fetchone()[0]
+            return count

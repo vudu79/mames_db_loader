@@ -1,5 +1,7 @@
 import json
-import logging
+import os
+
+from logs import get_logger
 
 from fake_useragent import UserAgent
 import requests
@@ -9,6 +11,8 @@ from database import db_connect
 
 
 def anecdot_pars(uri_part: str):
+    logger = get_logger(__name__)
+
     mem_info_dict = dict()
     memes_list = list()
     ua = UserAgent()
@@ -19,7 +23,8 @@ def anecdot_pars(uri_part: str):
     domen = "https://www.anekdot.ru"
     print(headers["user-agent"])
     page = 0
-    while True:
+    file_size = 0
+    while file_size < 300:
         page += 1
         uri_string = f"/{uri_part}/"
 
@@ -29,7 +34,7 @@ def anecdot_pars(uri_part: str):
             res = requests.get(url_string, headers=headers)
             if res.status_code == 200:
                 print(res.status_code)
-                logging.info(f'Рабатаю со страницей - {page}')
+                logger.info(f'Рабатаю со страницей - {page}')
                 print(f'Рабатаю со страницей - {page}')
                 soup = BeautifulSoup(res.text, "lxml")
                 img_divs = soup.find_all("div", class_="topicbox")
@@ -44,29 +49,33 @@ def anecdot_pars(uri_part: str):
 
                                 with open("../json_files/anekdot_memes.txt", "a", encoding="utf-8") as f:
                                     f.write(f"{img_url}\n")
-                                logging.info(f"В итоговом файле {len(memes_list)} записей")
+
+                                file_stats = os.stat("../json_files/anekdot_memes.txt")
+                                file_size = file_stats.st_size / (1024 * 1024)
+                                logger.info(f"В итоговом файле {len(memes_list)} записей")
                                 print(f"В итоговом файле {len(memes_list)} записей")
 
                             except Exception as ee:
-                                logging.error(f"Проблеммы с записью в файл - {ee}")
+                                logger.error(f"Проблеммы с записью в файл - {ee}")
 
 
                     except Exception as eeee:
                         print(f"Проблеммы с отдельным изображением - {eeee}")
-                        logging.error(f"Проблеммы с отдельным изображением - {eeee}")
+                        logger.error(f"Проблеммы с отдельным изображением - {eeee}")
                     finally:
                         continue
 
         except Exception as e:
             print(e)
-            logging.error(f"Проблеммы с requests на странице с мемами - {e}")
+            logger.error(f"Проблеммы с requests на странице с мемами - {e}")
 
+    return "Завершен парсинг https://www.anekdot.ru"
 
-if __name__ == "__main__":
-    # logging.basicConfig(level=logging.INFO, filename="../logs/memesmix_log.log", filemode="w",
-    # format="%(asctime)s %(levelname)s %(message)s")
+# if __name__ == "__main__":
+#     # logger.basicConfig(level=logger.INFO, filename="../logs/memesmix_log.log", filemode="w",
+#     # format="%(asctime)s %(levelname)s %(message)s")
+#
+#     logger.basicConfig(level=logger.INFO, filename="../logs/anekdot_log.log", filemode="w",
+#                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 
-    logging.basicConfig(level=logging.INFO, filename="../logs/anekdot_log.log", filemode="w",
-                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
-
-    anecdot_pars("random/mem")
+# anecdot_pars("random/mem")

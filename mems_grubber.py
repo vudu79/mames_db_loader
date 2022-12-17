@@ -1,7 +1,14 @@
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from random import shuffle
 from database.db import db_connect
+from grubbers.anecdot_ru_site import anecdot_pars
+from grubbers.bugaga_site import bugag_pars
+from grubbers.demotos_site import demotos_pars
+from grubbers.fishki_net import fishkinet_pars
+from grubbers.vse_shutochki_selenium import vse_shutochki_pars
+from grubbers.zaebov_net import zaebovnet_pars
 
 
 def make_list() -> list:
@@ -65,11 +72,30 @@ def make_list() -> list:
     # print(len(fishki_list))
     # print(len(demotos_list))
     # print(len(zaebovnet_list))
-    print(len(vse_shutochki_list_))
+    # print(len(vse_shutochki_list_))
 
     print(len(total_list))
 
     return total_list
+
+
+def cron_meme_parse():
+    parser_dict = [
+        (bugag_pars, "jokes"),
+        (demotos_pars, ""),
+        (fishkinet_pars, "kartinka-dnja"),
+        (vse_shutochki_pars, ""),
+        (zaebovnet_pars, "foto-prikoli"),
+        (anecdot_pars, "random/mem"),
+    ]
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_list = []
+        for parser in parser_dict:
+            future = executor.submit(parser[0], parser[1])
+            future_list.append(future)
+        for f in future_list:
+            print(f.result())
 
 
 if __name__ == "__main__":
@@ -77,4 +103,6 @@ if __name__ == "__main__":
                         format="%(asctime)s %(levelname)s %(message)s")
 
     # make_list()
-    db_connect(make_list())
+    # db_connect(make_list())
+
+    cron_meme_parse()

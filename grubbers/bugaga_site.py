@@ -1,5 +1,5 @@
 import json
-import logging
+from logs import get_logger
 
 from fake_useragent import UserAgent
 import requests
@@ -8,8 +8,11 @@ from bs4 import BeautifulSoup
 from database import db_connect
 
 
+
+
 # сайт https://bugaga.ru
 def bugag_pars(uri: str):
+    logger = get_logger(__name__)
     mem_info_dict = dict()
     memes_list = list()
     ua = UserAgent()
@@ -26,7 +29,7 @@ def bugag_pars(uri: str):
         try:
             res = requests.get(domen + uri_string, headers=headers)
             if res.status_code == 200:
-                logging.info(f'Рабатаю со страницей - {x}')
+                logger.info(f'Рабатаю со страницей - {x}')
                 soup = BeautifulSoup(res.text, "lxml")
 
                 divs = soup.find_all("div", class_="w_news")
@@ -38,7 +41,7 @@ def bugag_pars(uri: str):
                         if res.status_code == 200:
                             print(res.status_code)
                             print(f'Рабатаю с ссылкой - {pack_url}')
-                            logging.info(f'Рабатаю с ссылкой - {pack_url}')
+                            logger.info(f'Рабатаю с ссылкой - {pack_url}')
                             soup = BeautifulSoup(res.text, "lxml")
                             urls = soup.find("div", class_="w_cntn").find_all("a", class_="highslide")
                             paginate = soup.find("div", class_="navigation")
@@ -59,7 +62,7 @@ def bugag_pars(uri: str):
                                         if res.status_code == 200:
                                             print(res.status_code)
                                             print(f'Рабатаю с ссылкой - {pack_url}')
-                                            logging.info(f'Рабатаю с ссылкой - {pack_url}')
+                                            logger.info(f'Рабатаю с ссылкой - {pack_url}')
                                             soup = BeautifulSoup(res.text, "lxml")
                                             urls = soup.find("div", class_="w_cntn").find_all("a", class_="highslide")
                                             print(len(urls))
@@ -74,24 +77,24 @@ def bugag_pars(uri: str):
                                                     db_connect(img_url, "https://bugaga.ru")
 
                     except Exception as e:
-                        logging.error("проблемма с запросом на страницу мемов")
+                        logger.error("проблемма с запросом на страницу мемов")
 
         except Exception as e:
             print(e)
-            logging.error(f"Проблеммы с requests на странице со сборниками мемов - {e}")
+            logger.error(f"Проблеммы с requests на странице со сборниками мемов - {e}")
 
     try:
         with open("bugaga_memes.json", "w", encoding="utf-8") as f:
             json.dump(memes_list, f, indent=4, ensure_ascii=False)
-        logging.info(f'записал в файл {len(memes_list)} записей')
+        logger.info(f'записал в файл {len(memes_list)} записей')
     except Exception as ee:
-        logging.error(f"Проблеммы с записью в файл - {ee}")
+        logger.error(f"Проблеммы с записью в файл - {ee}")
 
-
-if __name__ == "__main__":
-    # logging.basicConfig(level=logging.INFO, filename="../logs/memes_buguga_log.log", filemode="w",
-    #                     format="%(asctime)s %(levelname)s %(message)s")
-    logging.basicConfig(level=logging.INFO, filename="../logs/memes_buguga_log.log", filemode="w",
-                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
-    # bugag_pars("/tags/%D0%BC%D0%B5%D0%BC%D1%8B")
-    bugag_pars("jokes")
+    return "Завершен парсинг https://bugaga.ru"
+# if __name__ == "__main__":
+#     # logger.basicConfig(level=logger.INFO, filename="../logs/memes_buguga_log.log", filemode="w",
+#     #                     format="%(asctime)s %(levelname)s %(message)s")
+#     logger.basicConfig(level=logger.INFO, filename="../logs/memes_buguga_log.log", filemode="w",
+#                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+#     # bugag_pars("/tags/%D0%BC%D0%B5%D0%BC%D1%8B")
+#     bugag_pars("jokes")

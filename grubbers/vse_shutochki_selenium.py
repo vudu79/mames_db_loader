@@ -1,4 +1,4 @@
-import logging
+from logs import get_logger
 import os
 from selenium import webdriver
 from fake_useragent import UserAgent
@@ -11,7 +11,8 @@ from selenium.webdriver.common.devtools.v85.indexed_db import Key
 from database import db_connect
 
 
-def vse_shutochki_pars():
+def vse_shutochki_pars(uti: str):
+    logger = get_logger(__name__)
     for page in range(1, 2822):
         ua = UserAgent(verify_ssl=False,
                        fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36')
@@ -47,20 +48,20 @@ def vse_shutochki_pars():
                         try:
                             db_connect(img_url, "https://vse-shutochki.ru")
                         except Exception as exep:
-                            logging.error(f'Ошибка при записи в файл - {exep}')
+                            logger.error(f'Ошибка при записи в файл - {exep}')
                             print(exep)
                         finally:
                             continue
 
                     except Exception as ex:
-                        logging.error(f'Ошибка в цикле по сбору ссылок - {ex}')
+                        logger.error(f'Ошибка в цикле по сбору ссылок - {ex}')
                         print(ex)
                     finally:
                         continue
                 total_time = datetime.now() - start
                 print(
                     f'Страница {page}. Загрузилось {count}, общее количество ссылок {len(url_list)}. Время {total_time}')
-                logging.info(
+                logger.info(
                     f'Страница {page}. Загрузилось {count}, общее количество {len(url_list)} ссылок. Время {total_time}')
 
                 html.send_keys(Keys.PAGE_DOWN)
@@ -68,13 +69,15 @@ def vse_shutochki_pars():
 
         except Exception as eee:
             print(eee)
-            logging.error(f'Ошибка в работе селениум - {eee}')
+            logger.error(f'Ошибка в работе селениум - {eee}')
         finally:
             driver.close()
             driver.quit()
+    return "Завершен парсинг сайта https://vse-shutochki.ru"
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, filename="../logs/vse_shutochki_log.log", filemode="w",
-                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
-    vse_shutochki_pars()
+#
+# if __name__ == "__main__":
+#     logger.basicConfig(level=logger.INFO, filename="../logs/vse_shutochki_log.log", filemode="w",
+#                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+#     vse_shutochki_pars()
