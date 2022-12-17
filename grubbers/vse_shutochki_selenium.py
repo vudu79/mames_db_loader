@@ -1,18 +1,30 @@
-from logs import get_logger
-import os
-from selenium import webdriver
-from fake_useragent import UserAgent
+import logging
 import time
 from datetime import datetime
+from os import name
+
+from fake_useragent import UserAgent
+from selenium import webdriver
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.devtools.v85.indexed_db import Key
-
-from database import db_connect
+from database.db import db_connect
+from logs import get_logger
 
 
 def vse_shutochki_pars(uti: str):
-    logger = get_logger(__name__)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    # настройка обработчика и форматировщика для logger2
+    handler = logging.FileHandler(f"../logs/{__name__}.log", mode='w')
+    formatter = logging.Formatter(
+        "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+
+    # добавление форматировщика к обработчику
+    handler.setFormatter(formatter)
+    # добавление обработчика к логгеру
+    logger.addHandler(handler)
+
     for page in range(1, 2822):
         ua = UserAgent(verify_ssl=False,
                        fallback='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36')

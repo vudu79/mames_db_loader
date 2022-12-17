@@ -1,16 +1,28 @@
 import json
+import logging
+
 from logs import get_logger
 import re
-
 from fake_useragent import UserAgent
 import requests
 from bs4 import BeautifulSoup
-
-from database import db_connect
+from database.db import db_connect
 
 
 def demotos_pars(uri_part: str):
-    logger = get_logger(__name__)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    # настройка обработчика и форматировщика для logger2
+    handler = logging.FileHandler(f"../logs/{__name__}.log", mode='w')
+    formatter = logging.Formatter(
+        "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+
+    # добавление форматировщика к обработчику
+    handler.setFormatter(formatter)
+    # добавление обработчика к логгеру
+    logger.addHandler(handler)
+
     mem_info_dict = dict()
     memes_list = list()
     ua = UserAgent()
