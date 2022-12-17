@@ -6,6 +6,7 @@ from grubbers.anecdot_ru_site import anecdot_pars
 from grubbers.bugaga_site import bugag_pars
 from grubbers.demotos_site import demotos_pars
 from grubbers.fishki_net import fishkinet_pars
+from grubbers.pinterest_site import pinterest_pars
 from grubbers.vse_shutochki_selenium import vse_shutochki_pars
 from grubbers.zaebov_net import zaebovnet_pars
 
@@ -80,6 +81,7 @@ def make_list() -> list:
 
 def cron_meme_parse():
     parser_dict = [
+        (pinterest_pars, "смешные мемы на все случаи жизни"),
         (bugag_pars, "jokes"),
         (demotos_pars, ""),
         (fishkinet_pars, "kartinka-dnja"),
@@ -88,7 +90,7 @@ def cron_meme_parse():
         (anecdot_pars, "random/mem"),
     ]
 
-    with ThreadPoolExecutor(max_workers=6) as executor:
+    with ThreadPoolExecutor(max_workers=7) as executor:
         future_list = []
         for parser in parser_dict:
             future = executor.submit(parser[0], parser[1])
@@ -98,10 +100,4 @@ def cron_meme_parse():
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.INFO, filename="logs/memes_log.log", filemode="w",
-    #                     format="%(asctime)s %(levelname)s %(message)s")
-
-    # make_list()
-    # db_connect(make_list())
-
     cron_meme_parse()
