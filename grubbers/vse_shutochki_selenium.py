@@ -16,7 +16,7 @@ def vse_shutochki_pars(uti: str):
     logger.setLevel(logging.INFO)
 
     # настройка обработчика и форматировщика для logger2
-    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.curdir), "logs", 'vse_shutochki.log'), mode='w')
+    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.pardir), "logs", 'vse_shutochki.log'), mode='w')
     formatter = logging.Formatter(
         "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 
@@ -89,7 +89,7 @@ def vse_shutochki_pars(uti: str):
 
 
 #
-# if __name__ == "__main__":
-#     logger.basicConfig(level=logger.INFO, filename="../logs/vse_shutochki_log.log", filemode="w",
-#                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
-#     vse_shutochki_pars()
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, filename="../logs/vse_shutochki_log.log", filemode="w",
+                        format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
+    vse_shutochki_pars("")

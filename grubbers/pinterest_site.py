@@ -15,7 +15,7 @@ def pinterest_pars(question: str):
     logger.setLevel(logging.INFO)
 
     # настройка обработчика и форматировщика для logger2
-    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.curdir), "logs", 'pinterest.log'), mode='w')
+    handler = logging.FileHandler(filename=os.path.join(os.path.abspath(os.pardir), "logs", 'pinterest.log'), mode='w')
     formatter = logging.Formatter(
         "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 
@@ -58,7 +58,7 @@ def pinterest_pars(question: str):
         login_button = driver.find_element(By.XPATH,
                                            '//*[@id="__PWS_ROOT__"]/div/div[1]/div/div[2]/div/div/div/div/div/div[4]/form/div[7]/button')
         login_button.click()
-        time.sleep(5)
+        time.sleep(10)
         search_input = driver.find_element(By.TAG_NAME, 'input')
         search_input.clear()
         search_input.send_keys(question)
@@ -72,10 +72,9 @@ def pinterest_pars(question: str):
         while file_size < 200:
             driver.get(url=url)
             html = driver.find_element(By.TAG_NAME, "html")
+            time.sleep(10)
             html.send_keys(Keys.PAGE_DOWN)
-            time.sleep(5)
-            html.send_keys(Keys.PAGE_DOWN)
-            time.sleep(5)
+            time.sleep(10)
 
             page += 1
             img_divs = driver.find_elements(By.XPATH, "//*[@class='hCL kVc L4E MIw']")
@@ -125,6 +124,6 @@ def pinterest_pars(question: str):
 
 
 if __name__ == "__main__":
-    logger.basicConfig(level=logger.INFO, filename="../logs/memes_log.log", filemode="w",
+    logging.basicConfig(level=logging.INFO, filename="../logs/memes_log.log", filemode="w",
                         format="%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
     pinterest_pars("смешные мемы на все случаи жизни")

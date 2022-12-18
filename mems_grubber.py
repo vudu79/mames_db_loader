@@ -81,16 +81,16 @@ def make_list() -> list:
 
 def cron_meme_parse():
     parser_dict = [
-        (pinterest_pars, "смешные мемы на все случаи жизни"),
-        (bugag_pars, "jokes"),
-        (demotos_pars, ""),
-        (fishkinet_pars, "kartinka-dnja"),
+        # (pinterest_pars, "смешные мемы на все случаи жизни"),
+        # (bugag_pars, "jokes"),
+        # (demotos_pars, ""),
+        # (fishkinet_pars, "kartinka-dnja"),
         (vse_shutochki_pars, ""),
-        (zaebovnet_pars, "foto-prikoli"),
+        # (zaebovnet_pars, "foto-prikoli"),
         (anecdot_pars, "random/mem"),
     ]
 
-    with ThreadPoolExecutor(max_workers=7) as executor:
+    with ThreadPoolExecutor(max_workers=3) as executor:
         future_list = []
         for parser in parser_dict:
             future = executor.submit(parser[0], parser[1])
